@@ -1,6 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using course_work_server.Controllers;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlite(connection));
 
 builder.Services.AddCors(options =>
 {
