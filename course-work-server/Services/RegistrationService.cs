@@ -7,6 +7,7 @@ namespace course_work_server.Services
 	{
 		DataContext db;
 		ValidationService ValidationService;
+		private HashPasswordService HashPasswordService;
 		LoggerService LoggerService;
 		public RegistrationService(DataContext db)
 		{
@@ -59,7 +60,7 @@ namespace course_work_server.Services
 				Login = registrationDTO.Login,
 				Name = registrationDTO.Name,
 				Surname = registrationDTO.Surname,
-				Password = registrationDTO.Password,
+				Password = HashPasswordService.Make(registrationDTO.Password),
 			};
 			try
 			{
@@ -74,5 +75,6 @@ namespace course_work_server.Services
 
 			return null;
 		}
+		
 	}
 }

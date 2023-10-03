@@ -27,19 +27,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            // указывает, будет ли валидироваться издатель при валидации токена
+            
             ValidateIssuer = true,
-            // строка, представляющая издателя
             ValidIssuer = TokenSettings.ISSUER,
-            // будет ли валидироваться потребитель токена
             ValidateAudience = true,
-            // установка потребителя токена
             ValidAudience = TokenSettings.AUDIENCE,
-            // будет ли валидироваться время существования
             ValidateLifetime = true,
-            // установка ключа безопасности
             IssuerSigningKey = TokenSettings.GetSymmetricSecurityAccessKey(),
-            // валидация ключа безопасности
             ValidateIssuerSigningKey = true,
         };
     });

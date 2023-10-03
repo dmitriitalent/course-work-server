@@ -16,7 +16,7 @@ namespace course_work_server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
 
-            modelBuilder.Entity("course_work_server.entities.RefreshToken", b =>
+            modelBuilder.Entity("course_work_server.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -37,7 +37,7 @@ namespace course_work_server.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("course_work_server.entities.User", b =>
+            modelBuilder.Entity("course_work_server.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,6 +59,10 @@ namespace course_work_server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -68,18 +72,18 @@ namespace course_work_server.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("course_work_server.entities.RefreshToken", b =>
+            modelBuilder.Entity("course_work_server.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("course_work_server.entities.User", "User")
+                    b.HasOne("course_work_server.Entities.User", "User")
                         .WithOne("RefreshToken")
-                        .HasForeignKey("course_work_server.entities.RefreshToken", "UserId")
+                        .HasForeignKey("course_work_server.Entities.RefreshToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("course_work_server.entities.User", b =>
+            modelBuilder.Entity("course_work_server.Entities.User", b =>
                 {
                     b.Navigation("RefreshToken")
                         .IsRequired();
