@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "srFhao+aWSWFbKqU8uPeh/VpWChjBibU+uJ7pvYz0W2fEOMBtKFZkRBsMCiUaUGtTjeeIqLcoS4241kJq8dD1g==",
+  "dgSpecHash": "LbFBeCUzUdqF46oYq3qtYVjJcXQMsnSj1W9CLGLmoi8HQy4KvGd2U0fgaO981/a9c0DV13ZzqApvUbqTeCDwMA==",
   "success": true,
   "projectFilePath": "D:\\code\\vue\\course-work-server\\course-work-server\\course-work-server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dmitrii_talent\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\dmitrii_talent\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
     "C:\\Users\\dmitrii_talent\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\dmitrii_talent\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.22\\microsoft.aspnetcore.authentication.jwtbearer.6.0.22.nupkg.sha512",
     "C:\\Users\\dmitrii_talent\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\dmitrii_talent\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\dmitrii_talent\\.nuget\\packages\\microsoft.data.sqlclient\\5.1.1\\microsoft.data.sqlclient.5.1.1.nupkg.sha512",

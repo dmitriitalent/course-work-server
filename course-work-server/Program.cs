@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using course_work_server.Controllers;
+using course_work_server.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using course_work_server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,29 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // указывает, будет ли валидироваться издатель при валидации токена
+            ValidateIssuer = true,
+            // строка, представляющая издателя
+            ValidIssuer = TokenSettings.ISSUER,
+            // будет ли валидироваться потребитель токена
+            ValidateAudience = true,
+            // установка потребителя токена
+            ValidAudience = TokenSettings.AUDIENCE,
+            // будет ли валидироваться время существования
+            ValidateLifetime = true,
+            // установка ключа безопасности
+            IssuerSigningKey = TokenSettings.GetSymmetricSecurityAccessKey(),
+            // валидация ключа безопасности
+            ValidateIssuerSigningKey = true,
+        };
+    });
+
 
 builder.Services.AddControllers();
 
@@ -29,6 +55,7 @@ app.UseCors("AllCors");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -1,6 +1,4 @@
 .DS_Store
-/course-work-server/bin
-course-work-server/obj
 
 # local env files
 .env.local
