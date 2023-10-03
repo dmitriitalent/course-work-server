@@ -13,6 +13,7 @@ namespace course_work_server.Services
 		{
 			this.db = db;
 			this.ValidationService = new ValidationService();
+			this.HashPasswordService = new HashPasswordService();
 		}
 
 		public string? Validate(RegistrationDTO registrationDTO)
@@ -61,6 +62,7 @@ namespace course_work_server.Services
 				Name = registrationDTO.Name,
 				Surname = registrationDTO.Surname,
 				Password = HashPasswordService.Make(registrationDTO.Password),
+				Salt = ""
 			};
 			try
 			{

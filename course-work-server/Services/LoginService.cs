@@ -18,11 +18,15 @@ namespace course_work_server.Services
 
 		}
 
-        public string? CheckUser(LoginDTO loginDTO) 
-		{
-			User user = db.Users.FirstOrDefault(user => user.Login == loginDTO.Login && 
-			    HashPasswordService.Compare(user.Password, loginDTO.Password));
-			if (user == null) 
+        public string? CheckUser(LoginDTO loginDTO)
+        {
+	        IQueryable<User> users = db.Users.Where(user => user.Login == loginDTO.Login);
+	        var passwordCompared = false;
+	        foreach (var user in users)
+	        {
+		        passwordCompared = HashPasswordService.Compare(user.Password, loginDTO.Password);
+	        }
+			if (!passwordCompared) 
 			{
 				return "Неверный логин или пароль";
 			}
