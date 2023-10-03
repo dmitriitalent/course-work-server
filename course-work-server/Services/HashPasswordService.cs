@@ -26,7 +26,7 @@ public class HashPasswordService
         return Hash(password);
     }
 
-    public bool Compare(string providedPassword, string hashedPassword)
+    public bool Compare(string hashedPassword, string providedPassword)
     {
         return hashedPassword == Hash(providedPassword);
     }
