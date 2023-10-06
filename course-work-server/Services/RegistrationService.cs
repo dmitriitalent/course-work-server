@@ -57,22 +57,36 @@ namespace course_work_server.Services
 		{
 			User user = new User()
 			{
-				Email = registrationDTO.Email,
 				Login = registrationDTO.Login,
-				Name = registrationDTO.Name,
-				Surname = registrationDTO.Surname,
 				Password = HashPasswordService.Make(registrationDTO.Password),
 				Salt = ""
 			};
-			try
+			try { db.Users.Add(user); }
+			catch (Exception ex)
 			{
-				db.Users.Add(user);
-				db.SaveChanges();
+				LoggerService.LogError(ex);
+				return "Не удалось добавить пользователя в базу данных";
 			}
+			
+			UserProfile userProfile = new UserProfile()
+			{
+				Email = registrationDTO.Email,
+				Name = registrationDTO.Name,
+				Surname = registrationDTO.Surname,
+				User = user
+			};
+			try { db.UserProfiles.Add(userProfile); }
 			catch (Exception ex)
 			{
 				LoggerService.LogError(ex);
                 return "Не удалось добавить пользователя в базу данных";
+			}
+
+			try { db.SaveChanges(); }
+			catch (Exception ex)
+			{
+				LoggerService.LogError(ex);
+				return "Не удалось сохранить пользователя";
 			}
 
 			return null;

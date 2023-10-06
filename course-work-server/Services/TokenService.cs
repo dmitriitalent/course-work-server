@@ -20,9 +20,6 @@ namespace course_work_server.Services
 		{
 			IList<Claim> claims = new List<Claim>() {
 				new Claim("Login", user.Login),
-				new Claim("Name", user.Name),
-				new Claim("Surname", user.Surname),
-				new Claim("Email", user.Email),
 				new Claim("Id", user.Id.ToString())
 			};
 

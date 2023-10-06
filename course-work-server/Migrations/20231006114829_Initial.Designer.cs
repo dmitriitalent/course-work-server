@@ -10,8 +10,8 @@ using course_work_server.Entities;
 namespace course_work_server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231001015405_AddRefreshToken")]
-    partial class AddRefreshToken
+    [Migration("20231006114829_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,7 +19,7 @@ namespace course_work_server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
 
-            modelBuilder.Entity("course_work_server.entities.RefreshToken", b =>
+            modelBuilder.Entity("course_work_server.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -37,10 +37,33 @@ namespace course_work_server.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("course_work_server.entities.User", b =>
+            modelBuilder.Entity("course_work_server.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("course_work_server.Entities.UserProfile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,15 +73,7 @@ namespace course_work_server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -66,24 +81,44 @@ namespace course_work_server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("course_work_server.entities.RefreshToken", b =>
+            modelBuilder.Entity("course_work_server.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("course_work_server.entities.User", "User")
+                    b.HasOne("course_work_server.Entities.User", "User")
                         .WithOne("RefreshToken")
-                        .HasForeignKey("course_work_server.entities.RefreshToken", "UserId")
+                        .HasForeignKey("course_work_server.Entities.RefreshToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("course_work_server.entities.User", b =>
+            modelBuilder.Entity("course_work_server.Entities.UserProfile", b =>
                 {
+                    b.HasOne("course_work_server.Entities.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("course_work_server.Entities.UserProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("course_work_server.Entities.User", b =>
+                {
+                    b.Navigation("Profile")
+                        .IsRequired();
+
                     b.Navigation("RefreshToken")
                         .IsRequired();
                 });
