@@ -21,5 +21,5 @@ pnpm-debug.log*
 *.sw?
 
 # Build files
-course-work-server/bin
-course-work-server/obj
+course-work-server/bin*
+course-work-server/obj*
