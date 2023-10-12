@@ -7,7 +7,7 @@ namespace course_work_server.Services
 	{
 		DataContext db;
 		ValidationService ValidationService;
-		private HashPasswordService HashPasswordService;
+		HashPasswordService HashPasswordService;
 		LoggerService LoggerService;
 		public RegistrationService(DataContext db)
 		{
@@ -20,9 +20,9 @@ namespace course_work_server.Services
 		{
 			string error = null;
 			error = ValidationService.ValidateEmail(registrationDTO.Email);
-			if (error != null)
+			if (error != null) 
 				return error;
-
+			
 			error = ValidationService.ValidatePassword(registrationDTO.Password);
 			if(error != null)
 				return error;
