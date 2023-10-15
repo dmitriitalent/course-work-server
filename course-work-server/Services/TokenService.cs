@@ -1,4 +1,5 @@
 ﻿using course_work_server.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -138,7 +139,7 @@ namespace course_work_server.Services
 			var jwtToken = handler.ReadJwtToken(token);
 			string userId = jwtToken.Claims.FirstOrDefault(cl => cl.Type == "Id").Value;
 
-            User user = db.Users.FirstOrDefault(user => 
+            User user = db.Users.Include(u => u.Profile).FirstOrDefault(user => 
 				user.Id.ToString() == userId
             );
 			return user;
