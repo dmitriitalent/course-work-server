@@ -1,5 +1,6 @@
 using course_work_server.Dto;
 using course_work_server.Entities;
+using course_work_server.Exceptions;
 using course_work_server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -25,7 +26,7 @@ public class RaceController : ControllerBase
     public IActionResult Create(RaceDTO raceDTO)
     {
         string error = RaceService.AddToDatabase(raceDTO);
-        if (error != null) { return Problem(detail: error, statusCode: 500); }
+        if (error != null) { throw new InternalServerException<RaceController>(error); }
         
         return Ok();
     }
@@ -35,7 +36,7 @@ public class RaceController : ControllerBase
     public IActionResult Update(int id, RaceDTO raceDTO)
     {
         string error = RaceService.UpdateInDatabase(id, raceDTO);
-        if (error != null) { return Problem(detail: error, statusCode: 500); }
+        if (error != null) { throw new InternalServerException<RaceController>(error); }
         
         return Ok();
     }
@@ -45,7 +46,7 @@ public class RaceController : ControllerBase
     public IActionResult Delete(int id)
     {
         string error = RaceService.DeleteFromDatabase(id);
-        if (error != null) { return Problem(detail: error, statusCode: 500); }
+        if (error != null) { throw new InternalServerException<RaceController>(error); }
         
         return Ok();
     }
