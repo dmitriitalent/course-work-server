@@ -12,7 +12,7 @@ namespace course_work_server.Entities
         public string Salt { get; set; }
 
         public RefreshToken RefreshToken { get; set; }
-        
+
         public UserProfile Profile { get; set; }
     }
 

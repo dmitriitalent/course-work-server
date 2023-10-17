@@ -1,8 +1,9 @@
-using Microsoft.EntityFrameworkCore;
+using course_work_server.Services;
 using course_work_server.Entities;
+using course_work_server.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using course_work_server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,17 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+try
+{
+    app.MapControllers();
+}
+catch (ResponseException ex)
+{
+    app.Run(async context =>
+    {
+        context.Response.StatusCode = ex.StatusCode;
+        await context.Response.WriteAsync(ex.Message);
+    });
+}
 
 app.Run();

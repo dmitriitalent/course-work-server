@@ -1,9 +1,10 @@
-﻿using course_work_server.Entities;
+﻿using course_work_server.Exceptions;
+using course_work_server.Entities;
 using course_work_server.Dto;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using course_work_server.Services;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,15 +32,15 @@ namespace course_work_server.Controllers
 		{
 			// Validation
 			string error = RegistrationService.Validate(registrationDTO);
-			if ( error != null ) { return Problem(detail: error, statusCode: 400); }
+			if ( error != null ) { throw new ValidationException(error, "AuthenticationController"); }
 
 			// Checks if the login is exist in database
 			error = RegistrationService.CheckLogin(registrationDTO.Login);
-			if (error != null) { return Problem(detail: error, statusCode: 400); }
+			if (error != null) { throw new ValidationException(error, "AuthenticationController"); }
 
 			// Add new User to database
 			error = RegistrationService.AddUserToDatabase(registrationDTO);
-			if (error != null) { return Problem(detail: "Непредвиденная ошибка", statusCode: 500); }
+			if (error != null) { throw new InternalServerException(error, "AuthenticationController"); }
 
 			// Generate tokens: List of { AccessToken, RefreshToken }
 			User user = db.Users.FirstOrDefault(user => user.Login == registrationDTO.Login);
@@ -64,7 +65,7 @@ namespace course_work_server.Controllers
 			// Finding user who have same login and password
 			string error = LoginService.CheckUser(loginDTO);
 			if (error != null)
-				return Problem(detail: error, statusCode: 400);
+				throw new BadRequestException(error, "AuthenticationController");
 			User user = db.Users.FirstOrDefault(user => user.Login == loginDTO.Login);
 
 			// Generate tokens: List of { AccessToken, RefreshToken }
@@ -105,15 +106,15 @@ namespace course_work_server.Controllers
 			// Get RefreshToken from cookies
 			string refreshToken;
 			if (!Request.Cookies.TryGetValue("RefreshToken", out refreshToken))
-				return Problem(detail: "Не удалось получить токен авторизации", statusCode: 500);
+				throw new UnauthorizedException("Ошибка авторизации", "AuthenticationController");
 
             // Verify token`s VERIFY SIGNATURE 
             if (!TokenService.VerifyToken(refreshToken))
-                return Problem(detail: "Invalid RefreshToken", statusCode: 500);
+				throw new UnauthorizedException("Ошибка авторизации", "AuthenticationController");
 
 			// Check if exist RefreshToken in database
 			if (!TokenService.ExistDbRefreshToken(refreshToken))
-				return Problem(detail: "RefreshToken не найден в базе данных", statusCode: 500);
+				throw new UnauthorizedException("Ошибка авторизации", "AuthenticationController");
 
 			// Get user to generate and save token 
 			User user = TokenService.GetUserByToken(refreshToken);
