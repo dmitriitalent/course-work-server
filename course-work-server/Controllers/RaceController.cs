@@ -14,17 +14,26 @@ public class RaceController : ControllerBase
 {
     DataContext db;
     RaceService RaceService;
+    TokenService TokenService;
+    AuthService AuthService;
     
     public RaceController(DataContext db)
     {
         this.db = db;
         this.RaceService = new RaceService(this.db);
+        this.TokenService = new TokenService(this.db);
+        this.AuthService = new AuthService(Request, this.TokenService);
     }
     
     [HttpPost]
     [Route("create")]
     public IActionResult Create(RaceDTO raceDTO)
     {
+        if (!AuthService.IsAdmin())
+        {
+            throw new ForbiddenException<RaceController>();
+        }
+
         string error = RaceService.AddToDatabase(raceDTO);
         if (error != null) { throw new InternalServerException<RaceController>(error); }
         
@@ -35,7 +44,12 @@ public class RaceController : ControllerBase
     [Route("update")]
     public IActionResult Update(int id, RaceDTO raceDTO)
     {
-        string error = RaceService.UpdateInDatabase(id, raceDTO);
+		if (!AuthService.IsAdmin())
+		{
+			throw new ForbiddenException<RaceController>();
+		}
+
+		string error = RaceService.UpdateInDatabase(id, raceDTO);
         if (error != null) { throw new InternalServerException<RaceController>(error); }
         
         return Ok();
@@ -45,7 +59,12 @@ public class RaceController : ControllerBase
     [Route("delete")]
     public IActionResult Delete(int id)
     {
-        string error = RaceService.DeleteFromDatabase(id);
+		if (!AuthService.IsAdmin())
+		{
+			throw new ForbiddenException<RaceController>();
+		}
+
+		string error = RaceService.DeleteFromDatabase(id);
         if (error != null) { throw new InternalServerException<RaceController>(error); }
         
         return Ok();

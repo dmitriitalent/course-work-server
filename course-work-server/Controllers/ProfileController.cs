@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using System.Security;
 using System.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -17,14 +19,14 @@ public class ProfileController : ControllerBase
 
 	DataContext db;
 	TokenService TokenService;
-	AuthorizeService AuthorizeService;
+	AuthService AuthService;
 	ProfileService ProfileService;
 	LoggerService LoggerService;
     public ProfileController(DataContext db)
 	{
 		this.db = db;
 		this.TokenService = new TokenService(db);
-		this.AuthorizeService = new AuthorizeService(Request, this.TokenService);
+		this.AuthService = new AuthService(Request, this.TokenService);
 		this.LoggerService = new LoggerService();
         this.ProfileService = new ProfileService(db, this.LoggerService);
 
@@ -32,29 +34,9 @@ public class ProfileController : ControllerBase
 
 	[HttpPost]
 	[Route("get")]
-	public IActionResult Get()
+	public IActionResult Get(int id)
 	{
-		// Check if user is`n authorized
-		if (!AuthorizeService.IsAuthorize())
-		{
-			throw new UnauthorizedException<ProfileController>("Пользователь не авторизован");
-		}
-
-		// Get user by token
-		string token = null;
-		Request.Cookies.TryGetValue("RefreshToken", out token);
-		User user = TokenService.GetUserByToken(token);
-
-		// Return profile data from user.Profile
-		return Ok(
-			JsonConvert.SerializeObject(
-				user.Profile,
-				new JsonSerializerSettings()
-				{
-					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-				}
-			)
-		);
+		return Ok(ProfileService.GetUserById(id));
 	}
 
 	[HttpPost]
@@ -66,9 +48,24 @@ public class ProfileController : ControllerBase
 
     [HttpPost]
     [Route("Update")]
-    public IActionResult Update(UserProfile profile)
+    public IActionResult Update(UserProfileDTO profileDTO)
     {
-        string error = ProfileService.UpdateInDatabase(profile);
+		// Проверяем верифицирован ли пользователь
+		if(!AuthService.IsAuthenticated())
+		{ 
+			throw new UnauthorizedException<ProfileController>(); 
+		}
+
+		UserProfile profile = new UserProfile();
+		foreach (var field in profileDTO.GetType().GetFields())
+		{
+			//filed.GetValue(из какого объекта взять значение поля);
+			//field.SetValue(в какой объект вставляем, что вставляем)
+			field.SetValue(profile, field.GetValue(profileDTO));
+		}
+		profile.Id = int.Parse(AuthService.GetClaimValue("Id"));
+
+		string error = ProfileService.UpdateInDatabase(profile);
         if (error != null) { throw new InternalServerException<ProfileController>(error); }
 
         return Ok();

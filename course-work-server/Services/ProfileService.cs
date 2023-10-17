@@ -1,6 +1,10 @@
 ﻿using course_work_server.Dto;
 using course_work_server.Entities;
+using course_work_server.Exceptions;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace course_work_server.Services
 {
@@ -40,7 +44,24 @@ namespace course_work_server.Services
 
 			return null;
 		}
+		public string GetUserById(int id)
+		{
+			User user = db.Users.Include(u => u.Profile).FirstOrDefault(u => u.Id == id);
 
+			if (user == null)
+			{
+				throw new NotFoundException<ProfileService>("Пользователь с таким идентификатором не найден");
+			}
+
+			// Return profile data from user.Profile
+			return JsonConvert.SerializeObject(
+				user.Profile,
+				new JsonSerializerSettings()
+				{
+					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+				}
+			);
+		}
 		public List<UserProfile> GetAll()
 		{
 			return db.UserProfiles.ToList();

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace course_work_server.Controllers
 {
@@ -25,6 +26,17 @@ namespace course_work_server.Controllers
 			this.TokenService = new TokenService(this.db);
 			this.LoginService = new LoginService(this.db);
 		}
+
+		[HttpPost]
+		[Route("lel")]
+		public IActionResult lel()
+		{
+			string refreshToken = null;
+			Request.Cookies.TryGetValue("RefreshToken", out refreshToken);
+			TokenService.VerifyToken(refreshToken);
+			return Ok();
+		}
+
 
 		[HttpPost]
 		[Route("registration")]

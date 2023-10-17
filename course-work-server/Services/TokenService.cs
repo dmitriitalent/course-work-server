@@ -1,6 +1,8 @@
 ﻿using course_work_server.Entities;
+using course_work_server.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -26,15 +28,11 @@ namespace course_work_server.Services
 			};
 
 			JwtSecurityToken accessToken = new JwtSecurityToken(
-				issuer: TokenSettings.ISSUER,
-				audience: TokenSettings.AUDIENCE,
 				claims: claims,
 				expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
 				signingCredentials: new SigningCredentials(TokenSettings.GetSymmetricSecurityAccessKey(), SecurityAlgorithms.HmacSha256)
 			);
 			JwtSecurityToken refreshToken = new JwtSecurityToken(
-				issuer: TokenSettings.ISSUER,
-				audience: TokenSettings.AUDIENCE,
 				claims: claims,
 				expires: DateTime.UtcNow.Add(TimeSpan.FromDays(30)),
 				signingCredentials: new SigningCredentials(TokenSettings.GetSymmetricSecurityRefreshKey(), SecurityAlgorithms.HmacSha256)
@@ -96,36 +94,24 @@ namespace course_work_server.Services
 
 		public bool VerifyToken(string refreshToken)
 		{
-            var validationParametrs = new TokenValidationParameters()
-            {
-                ValidateIssuer = true, // указывает, будет ли валидироваться издатель при валидации токена
-                ValidIssuer = TokenSettings.ISSUER, // строка, представляющая издателя
-                ValidateAudience = true, // будет ли валидироваться потребитель токена
-                ValidAudience = TokenSettings.AUDIENCE, // установка потребителя токена
-                ValidateLifetime = true, // будет ли валидироваться время существования
-                IssuerSigningKey = TokenSettings.GetSymmetricSecurityRefreshKey(), // установка ключа безопасности
-            };
+			JwtSecurityToken token = new JwtSecurityTokenHandler().ReadToken(refreshToken) as JwtSecurityToken;
+			if (token.ValidTo < DateTime.UtcNow)
+			{
+				throw new UnauthorizedException<TokenService>("У токена закончилось время жизни");
+			}
 
-            SecurityToken validatedRefreshToken;
-            JwtSecurityToken validJwt = null;
-            try
-            {
-                new JwtSecurityTokenHandler().ValidateToken(refreshToken, validationParametrs, out validatedRefreshToken);
-                validJwt = validatedRefreshToken as JwtSecurityToken;
-            }
-            catch (Exception ex)
-            {
-				return false;
-            }
-            if (validJwt == null)
-            {
-				return false;
-            }
-            else
-            {
-				return true;
-            }
-        }
+			var validToken = new JwtSecurityToken(
+				claims: token.Claims,
+				expires: token.ValidTo,
+				signingCredentials: new SigningCredentials(TokenSettings.GetSymmetricSecurityRefreshKey(), SecurityAlgorithms.HmacSha256)
+			);
+
+			if (new JwtSecurityTokenHandler().WriteToken(validToken) != refreshToken)
+			{
+				throw new UnauthorizedException<TokenService>("Подпись токена не совпадает");
+			}
+			return true;
+		}
 
 		public bool ExistDbRefreshToken(string refreshToken)
 		{
