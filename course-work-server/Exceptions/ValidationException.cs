@@ -1,8 +1,8 @@
 ﻿namespace course_work_server.Exceptions;
 
-public class ValidationException : ResponseException
+public class ValidationException<TController> : ResponseException<TController>
 {
-	public ValidationException(string message, string? controller = null) 
-		: base (message, 403, controller) 
+	public ValidationException(string message) 
+		: base (message, 403) 
 	{ }
 }

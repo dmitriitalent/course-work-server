@@ -1,8 +1,8 @@
 ﻿namespace course_work_server.Exceptions;
 
-public class BadRequestException : ResponseException
+public class BadRequestException<TController> : ResponseException<TController>
 {
-	public BadRequestException(string message, string? controller = null)
-		: base(message, 400, controller) 
+	public BadRequestException(string message)
+		: base(message, 400) 
 	{ }
 }

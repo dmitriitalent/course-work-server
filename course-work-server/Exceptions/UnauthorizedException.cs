@@ -1,8 +1,8 @@
 ﻿namespace course_work_server.Exceptions;
 
-public class UnauthorizedException : ResponseException
+public class UnauthorizedException<TController> : ResponseException<TController>
 {
-	public UnauthorizedException(string message, string? controller = null)
-		: base(message, 401, controller)
+	public UnauthorizedException(string message)
+		: base(message, 401)
 	{ }
 }

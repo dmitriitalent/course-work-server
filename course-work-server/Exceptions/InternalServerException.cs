@@ -1,8 +1,10 @@
-﻿namespace course_work_server.Exceptions;
+﻿using Microsoft.AspNetCore.Mvc;
 
-public class InternalServerException : ResponseException
+namespace course_work_server.Exceptions;
+
+public class InternalServerException<TController> : ResponseException<TController>
 {
-	public InternalServerException(string message, string? controller = null)
-		: base(message, 500, controller)
+	public InternalServerException(string message)
+		: base(message, 500)
 	{ }
 }

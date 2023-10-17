@@ -1,12 +1,14 @@
 ﻿using course_work_server.Entities;
 using course_work_server.Services;
+using course_work_server.Dto;
+using course_work_server.Exceptions;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security;
-using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Update.Internal;
-using course_work_server.Dto;
+using System.Security;
+using System.Data;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -35,7 +37,7 @@ public class ProfileController : ControllerBase
 		// Check if user is`n authorized
 		if (!AuthorizeService.IsAuthorize())
 		{
-			return Problem(detail: "Пользователь не авторизован", statusCode: 400);
+			throw new UnauthorizedException<ProfileController>("Пользователь не авторизован");
 		}
 
 		// Get user by token
@@ -67,7 +69,7 @@ public class ProfileController : ControllerBase
     public IActionResult Update(UserProfile profile)
     {
         string error = ProfileService.UpdateInDatabase(profile);
-        if (error != null) { return Problem(detail: error, statusCode: 500); }
+        if (error != null) { throw new InternalServerException<ProfileController>(error); }
 
         return Ok();
     }

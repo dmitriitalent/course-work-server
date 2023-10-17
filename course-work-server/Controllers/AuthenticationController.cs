@@ -32,15 +32,15 @@ namespace course_work_server.Controllers
 		{
 			// Validation
 			string error = RegistrationService.Validate(registrationDTO);
-			if ( error != null ) { throw new ValidationException(error, "AuthenticationController"); }
+			if ( error != null ) { throw new ValidationException<AuthenticationController>(error); }
 
 			// Checks if the login is exist in database
 			error = RegistrationService.CheckLogin(registrationDTO.Login);
-			if (error != null) { throw new ValidationException(error, "AuthenticationController"); }
+			if (error != null) { throw new ValidationException<AuthenticationController>(error); }
 
 			// Add new User to database
 			error = RegistrationService.AddUserToDatabase(registrationDTO);
-			if (error != null) { throw new InternalServerException(error, "AuthenticationController"); }
+			if (error != null) { throw new InternalServerException<AuthenticationController>(error); }
 
 			// Generate tokens: List of { AccessToken, RefreshToken }
 			User user = db.Users.FirstOrDefault(user => user.Login == registrationDTO.Login);
@@ -65,7 +65,7 @@ namespace course_work_server.Controllers
 			// Finding user who have same login and password
 			string error = LoginService.CheckUser(loginDTO);
 			if (error != null)
-				throw new BadRequestException(error, "AuthenticationController");
+				throw new BadRequestException<AuthenticationController>(error);
 			User user = db.Users.FirstOrDefault(user => user.Login == loginDTO.Login);
 
 			// Generate tokens: List of { AccessToken, RefreshToken }
@@ -106,15 +106,15 @@ namespace course_work_server.Controllers
 			// Get RefreshToken from cookies
 			string refreshToken;
 			if (!Request.Cookies.TryGetValue("RefreshToken", out refreshToken))
-				throw new UnauthorizedException("Ошибка авторизации", "AuthenticationController");
+				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации");
 
             // Verify token`s VERIFY SIGNATURE 
             if (!TokenService.VerifyToken(refreshToken))
-				throw new UnauthorizedException("Ошибка авторизации", "AuthenticationController");
+				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации");
 
 			// Check if exist RefreshToken in database
 			if (!TokenService.ExistDbRefreshToken(refreshToken))
-				throw new UnauthorizedException("Ошибка авторизации", "AuthenticationController");
+				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации");
 
 			// Get user to generate and save token 
 			User user = TokenService.GetUserByToken(refreshToken);
