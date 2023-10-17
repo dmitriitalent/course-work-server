@@ -10,6 +10,7 @@ namespace course_work_server.Entities
         public string Login { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
+        public string Role { get; set; }
 
         public RefreshToken RefreshToken { get; set; }
 
