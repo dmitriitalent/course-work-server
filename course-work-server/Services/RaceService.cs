@@ -16,14 +16,16 @@ public class RaceService
 
     public string? AddToDatabase(RaceDTO raceDTO)
     {
-        Race race = new Race()
-        {
-            Title = raceDTO.Title,
-            Location = raceDTO.Location,
-            Date = raceDTO.Date
-        };
-        
-        try
+        Race race = new Race();
+
+		foreach (var field in raceDTO.GetType().GetFields())
+		{
+			//filed.GetValue(из какого объекта взять значение поля);
+			//field.SetValue(в какой объект вставляем, что вставляем)
+			field.SetValue(race, field.GetValue(raceDTO));
+		}
+
+		try
         {
             db.Races.Add(race);
             db.SaveChanges();
@@ -44,10 +46,14 @@ public class RaceService
             Race race = db.Races.FirstOrDefault(race => race.Id == id);
             if (race != null)
             {
-                race.Title = raceDTO.Title;
-                race.Location = raceDTO.Location;
-                race.Date = raceDTO.Date;
-                db.Races.Update(race);
+
+				foreach (var field in raceDTO.GetType().GetFields())
+				{
+					//filed.GetValue(из какого объекта взять значение поля);
+					//field.SetValue(в какой объект вставляем, что вставляем)
+					field.SetValue(race, field.GetValue(raceDTO));
+				}
+				db.Races.Update(race);
                 db.SaveChanges();
             }
         }
