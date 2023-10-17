@@ -2,9 +2,9 @@
 
 namespace course_work_server.Exceptions;
 
-public class InternalServerException<TController> : ResponseException<TController>
+public class InternalServerException<TController> : ResponseException
 {
 	public InternalServerException(string message)
-		: base(message, 500)
+		: base(message, 500, typeof(TController).Name)
 	{ }
 }

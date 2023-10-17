@@ -1,12 +1,12 @@
 ﻿namespace course_work_server.Exceptions;
 
-public class ResponseException <TController> : Exception
+public class ResponseException : Exception
 {
-	public ResponseException(string message, int statusCode) 
+	public ResponseException(string message, int statusCode, string controllerName) 
 		: base(message) 
 	{
 		this.StatusCode = statusCode;
-		this.Controller = typeof(TController).Name;
+		this.Controller = controllerName;
 	}
 
 	public int StatusCode { get; set; }
