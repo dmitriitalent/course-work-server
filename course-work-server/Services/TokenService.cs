@@ -21,6 +21,7 @@ namespace course_work_server.Services
 		{
 			IList<Claim> claims = new List<Claim>() {
 				new Claim("Login", user.Login),
+				new Claim("Role", user.Role),
 				new Claim("Id", user.Id.ToString())
 			};
 
