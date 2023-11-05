@@ -64,7 +64,7 @@ app.Use(async (context, next) =>
 	catch (ResponseException ex)
 	{
 		context.Response.StatusCode = ex.StatusCode;
-		await context.Response.WriteAsync(ex.Message + " in " + ex.Controller);
+		await context.Response.WriteAsync(ex.Message);
 	}
 });
 

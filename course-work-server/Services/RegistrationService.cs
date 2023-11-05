@@ -89,7 +89,6 @@ public class RegistrationService
 			LoggerService.LogError(ex);
 			return "Не удалось сохранить пользователя";
 		}
-
 		return null;
 	}
 }
