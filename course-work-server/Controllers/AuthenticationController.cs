@@ -64,10 +64,10 @@ namespace course_work_server.Controllers
 			// Add tokens to response Cookies
 			Response.Cookies.Append("AccessToken", new JwtSecurityTokenHandler().WriteToken(tokens[0]));
 			Response.Cookies.Append("RefreshToken", new JwtSecurityTokenHandler().WriteToken(tokens[1]),
-				new CookieOptions() { HttpOnly = true, Secure = true } // Cookies is not available in JS of we use HttpOnly flag
+				new CookieOptions() { SameSite = SameSiteMode.None, HttpOnly = true, Secure = true } // Cookies is not available in JS of we use HttpOnly flag
 			);
 
-			return Ok();
+			return Ok(new JwtSecurityTokenHandler().WriteToken(tokens[0]));
 		}
 
 		[HttpPost]
@@ -89,10 +89,10 @@ namespace course_work_server.Controllers
 			// Add tokens to response Cookies
 			Response.Cookies.Append("AccessToken", new JwtSecurityTokenHandler().WriteToken(tokens[0]));
 			Response.Cookies.Append("RefreshToken", new JwtSecurityTokenHandler().WriteToken(tokens[1]),
-				new CookieOptions() { HttpOnly = true, Secure = true } // Cookies is not available in JS of we use HttpOnly flag
+				new CookieOptions() { SameSite = SameSiteMode.None, HttpOnly = true, Secure = true } // Cookies is not available in JS of we use HttpOnly flag
 			);
 
-			return Ok();
+			return Ok(new JwtSecurityTokenHandler().WriteToken(tokens[0]));
 		}
 
 		[HttpPost]
@@ -118,22 +118,22 @@ namespace course_work_server.Controllers
 			// Get RefreshToken from cookies
 			string refreshToken;
 			if (!Request.Cookies.TryGetValue("RefreshToken", out refreshToken))
-				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации");
+				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации1");
 
             // Verify token`s VERIFY SIGNATURE 
             if (!TokenService.VerifyToken(refreshToken))
-				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации");
+				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации2");
 
 			// Check if exist RefreshToken in database
 			if (!TokenService.ExistDbRefreshToken(refreshToken))
-				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации");
+				throw new UnauthorizedException<AuthenticationController>("Ошибка авторизации3");
 
 			// Get user to generate and save token 
 			User user = TokenService.GetUserByToken(refreshToken);
 
             // Generate List of tokens { AccessToken, RefreshToken }
             IList<JwtSecurityToken> tokens = TokenService.GenerateTokens(user);
-			
+
 			// Save token to database
 			TokenService.SaveToken(new JwtSecurityTokenHandler().WriteToken(tokens[1]), user);
 
@@ -144,10 +144,10 @@ namespace course_work_server.Controllers
             // Add tokens to response Cookies
             Response.Cookies.Append("AccessToken", new JwtSecurityTokenHandler().WriteToken(tokens[0]));
             Response.Cookies.Append("RefreshToken", new JwtSecurityTokenHandler().WriteToken(tokens[1]),
-                new CookieOptions() { HttpOnly = true, Secure = true } // Cookies is not available in JS of we use HttpOnly flag
+                new CookieOptions() { SameSite = SameSiteMode.None, HttpOnly = true, Secure = true } // Cookies is not available in JS of we use HttpOnly flag
             );
 
-            return Ok();
+            return Ok(new JwtSecurityTokenHandler().WriteToken(tokens[0]));
 		}
 	}
 }

@@ -48,6 +48,7 @@ namespace course_work_server.Services
 			{
 				try
 				{
+					Console.WriteLine(NewToken);
 					token.Token = NewToken;
 					db.SaveChanges();
 				}
@@ -66,6 +67,7 @@ namespace course_work_server.Services
 					UserId = user.Id
 				};
 				try {
+					
 					db.RefreshTokens.Add(RefreshToken);
 					db.SaveChanges();
 				}
@@ -116,7 +118,9 @@ namespace course_work_server.Services
 		public bool ExistDbRefreshToken(string refreshToken)
 		{
 			if (db.RefreshTokens.FirstOrDefault(token => token.Token == refreshToken) == null) 
-			{ return false; }
+			{
+				return false; 
+			}
 			return true;
 		}
 

@@ -86,7 +86,6 @@ public class RegistrationService
 		try { db.SaveChanges(); }
 		catch (Exception ex)
 		{
-			LoggerService.LogError(ex);
 			return "Не удалось сохранить пользователя";
 		}
 		return null;
