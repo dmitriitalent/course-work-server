@@ -31,7 +31,6 @@ public class RaceController : ControllerBase
     [Route("create")]
     public IActionResult Create(RaceDTO raceDTO)
     {
-        Console.WriteLine(raceDTO.Date);
 		string refreshTokenString = null;
 		Request.Cookies.TryGetValue("RefreshToken", out refreshTokenString);
 		if (!AuthService.IsAdmin(refreshTokenString))
@@ -62,7 +61,7 @@ public class RaceController : ControllerBase
         return Ok();
     }
     
-    [HttpPost]
+    [HttpGet]
     [Route("delete")]
     public IActionResult Delete(int id)
     {

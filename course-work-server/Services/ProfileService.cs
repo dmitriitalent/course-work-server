@@ -52,7 +52,7 @@ namespace course_work_server.Services
 			{
 				throw new NotFoundException<ProfileService>("Пользователь с таким идентификатором не найден");
 			}
-
+			user.Profile.User = null;
 			// Return profile data from user.Profile
 			return JsonConvert.SerializeObject(
 				user.Profile,

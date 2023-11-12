@@ -9,22 +9,19 @@ public class RaceService
 {
     DataContext db;
     LoggerService LoggerService;
-
+    
     public RaceService(DataContext db)
     {
         this.db = db;
-    }
+		this.LoggerService = new LoggerService();
+
+	}
 
     public string? AddToDatabase(RaceDTO raceDTO)
     {
         Race race = new Race();
-
-		foreach (var field in raceDTO.GetType().GetFields())
-		{
-			//filed.GetValue(из какого объекта взять значение поля);
-			//field.SetValue(в какой объект вставляем, что вставляем)
-			field.SetValue(race, field.GetValue(raceDTO));
-		}
+		race.Title = raceDTO.Title;
+        race.Location = raceDTO.Location;
         race.Date = DateTime.ParseExact(raceDTO.Date, "dd MM yyyy", CultureInfo.InvariantCulture);
 
 		try
