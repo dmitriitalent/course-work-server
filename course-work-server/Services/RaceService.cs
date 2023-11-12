@@ -1,6 +1,7 @@
 using course_work_server.Dto;
 using course_work_server.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace course_work_server.Services;
 
@@ -24,7 +25,7 @@ public class RaceService
 			//field.SetValue(в какой объект вставляем, что вставляем)
 			field.SetValue(race, field.GetValue(raceDTO));
 		}
-        race.Date = DateTime.Parse(raceDTO.Date);
+        race.Date = DateTime.ParseExact(raceDTO.Date, "dd MM yyyy", CultureInfo.InvariantCulture);
 
 		try
         {

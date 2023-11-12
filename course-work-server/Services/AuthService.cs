@@ -1,4 +1,5 @@
-﻿using course_work_server.Entities;
+﻿using Azure.Core;
+using course_work_server.Entities;
 using course_work_server.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,24 +16,18 @@ namespace course_work_server.Services
             this.TokenService = TokenService;
         }
 
-        private JwtSecurityToken GetRefreshToken(IRequestCookieCollection Cookies)
-        {
-			string refreshTokenString = null;
-			Cookies.TryGetValue("RefreshToken", out refreshTokenString);
-			JwtSecurityToken refreshToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenString);
-            return refreshToken;
-        }
 
-        private string GetRole(IRequestCookieCollection Cookies)
+        private string GetRole(string refreshToken)
         {
-            return GetRefreshToken(Cookies).Claims.LastOrDefault(c => c.Type == "Role").Value;
+			JwtSecurityToken refreshTokenJwt = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
+			return refreshTokenJwt.Claims.LastOrDefault(c => c.Type == "Role").Value;
 		}
 
 		// Верифицирует токен пользователя при его наличии
-		public bool IsAuthenticated(IRequestCookieCollection Cookies)
+		public bool IsAuthenticated(string refreshToken)
         {
-            string refreshToken = null;
-            Cookies.TryGetValue("RefreshToken", out refreshToken);
+/*            string refreshToken = null;
+            Cookies.TryGetValue("RefreshToken", out refreshToken);*/
             if (refreshToken == null) 
             {
                 return false; 
@@ -48,24 +43,14 @@ namespace course_work_server.Services
             }
 		}
 
-        public string GetClaimValue(string key, IRequestCookieCollection Cookies)
+		public bool IsAdmin(string refreshToken)
         {
-            if(!IsAuthenticated(Cookies))
-            {
-                throw new UnauthorizedException<AuthService>();
-            }
-            
-			return GetRefreshToken(Cookies).Claims.FirstOrDefault(c => c.Type == key).Value;
-        }
-
-		public bool IsAdmin(IRequestCookieCollection Cookies)
-        {
-			if (!IsAuthenticated(Cookies))
+			if (!IsAuthenticated(refreshToken))
 			{
 				return false;
 			}
 
-			if (GetRole(Cookies) == "Admin")
+			if (GetRole(refreshToken) == "Admin")
 			{
 				return true;
 			}

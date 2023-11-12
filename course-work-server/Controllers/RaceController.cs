@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace course_work_server.Controllers;
 
@@ -23,15 +24,18 @@ public class RaceController : ControllerBase
         this.db = db;
         this.RaceService = new RaceService(this.db);
         this.TokenService = new TokenService(this.db);
+        this.AuthService = new AuthService(this.TokenService);
     }
     
     [HttpPost]
     [Route("create")]
     public IActionResult Create(RaceDTO raceDTO)
     {
-
-		if (!AuthService.IsAdmin(Request.Cookies))
-        {
+        Console.WriteLine(raceDTO.Date);
+		string refreshTokenString = null;
+		Request.Cookies.TryGetValue("RefreshToken", out refreshTokenString);
+		if (!AuthService.IsAdmin(refreshTokenString))
+		{
             throw new ForbiddenException<RaceController>();
         }
 
@@ -45,7 +49,9 @@ public class RaceController : ControllerBase
     [Route("update")]
     public IActionResult Update(int id, RaceDTO raceDTO)
     {
-		if (!AuthService.IsAdmin(Request.Cookies))
+		string refreshTokenString = null;
+		Request.Cookies.TryGetValue("RefreshToken", out refreshTokenString);
+		if (!AuthService.IsAdmin(refreshTokenString))
 		{
 			throw new ForbiddenException<RaceController>();
 		}
@@ -60,7 +66,9 @@ public class RaceController : ControllerBase
     [Route("delete")]
     public IActionResult Delete(int id)
     {
-		if (!AuthService.IsAdmin(Request.Cookies))
+		string refreshTokenString = null;
+		Request.Cookies.TryGetValue("RefreshToken", out refreshTokenString);
+		if (!AuthService.IsAdmin(refreshTokenString))
 		{
 			throw new ForbiddenException<RaceController>();
 		}

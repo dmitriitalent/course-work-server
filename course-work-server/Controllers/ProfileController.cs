@@ -11,6 +11,9 @@ using System.Security;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Net;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.IdentityModel.Tokens.Jwt;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -49,8 +52,10 @@ public class ProfileController : ControllerBase
     [Route("Update")]
     public IActionResult Update(UserProfileDTO profileDTO)
     {
+		string refreshTokenString = null;
+		Request.Cookies.TryGetValue("RefreshToken", out refreshTokenString);
 		// Проверяем верифицирован ли пользователь
-		if(!AuthService.IsAuthenticated(Request.Cookies))
+		if (!AuthService.IsAuthenticated(refreshTokenString))
 		{
 			throw new UnauthorizedException<ProfileController>(); 
 		}
@@ -62,7 +67,9 @@ public class ProfileController : ControllerBase
 			//field.SetValue(в какой объект вставляем, что вставляем)
 			field.SetValue(profile, field.GetValue(profileDTO));
 		}
-		profile.Id = int.Parse(AuthService.GetClaimValue("Id", Request.Cookies));
+
+		JwtSecurityToken refreshToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenString);
+		profile.Id = int.Parse(refreshToken.Claims.FirstOrDefault(c => c.Type == "Id").Value);
 
 		string error = ProfileService.UpdateInDatabase(profile);
         if (error != null) { throw new InternalServerException<ProfileController>(error); }
