@@ -1,6 +1,9 @@
+using course_work_server.Controllers;
 using course_work_server.Dto;
 using course_work_server.Entities;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace course_work_server.Services;
@@ -22,8 +25,14 @@ public class RaceService
         Race race = new Race();
 		race.Title = raceDTO.Title;
         race.Location = raceDTO.Location;
-        race.Date = DateTime.ParseExact(raceDTO.Date, "dd MM yyyy", CultureInfo.InvariantCulture);
-
+        try
+        {
+            race.Date = DateTime.ParseExact(raceDTO.Date, "dd MM yyyy", CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return "Неправильный формат даты";
+        }
 		try
         {
             db.Races.Add(race);
