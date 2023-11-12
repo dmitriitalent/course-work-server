@@ -1,40 +1,40 @@
 ﻿using course_work_server.Entities;
 using course_work_server.Exceptions;
+using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 
 namespace course_work_server.Services
 {
     public class AuthService
     {
         TokenService TokenService;
-        HttpRequest Request;
 
-        public AuthService(HttpRequest Request, TokenService TokenService)
+        public AuthService(TokenService TokenService)
         {
-            this.Request = Request;
             this.TokenService = TokenService;
         }
 
-        private JwtSecurityToken GetRefreshToken()
+        private JwtSecurityToken GetRefreshToken(IRequestCookieCollection Cookies)
         {
 			string refreshTokenString = null;
-			Request.Cookies.TryGetValue("RefreshToken", out refreshTokenString);
+			Cookies.TryGetValue("RefreshToken", out refreshTokenString);
 			JwtSecurityToken refreshToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenString);
-			return refreshToken;
-		}
+            return refreshToken;
+        }
 
-        private string GetRole()
+        private string GetRole(IRequestCookieCollection Cookies)
         {
-            return GetRefreshToken().Claims.LastOrDefault(c => c.Type == "Role").Value;
+            return GetRefreshToken(Cookies).Claims.LastOrDefault(c => c.Type == "Role").Value;
 		}
 
 		// Верифицирует токен пользователя при его наличии
-		public bool IsAuthenticated()
+		public bool IsAuthenticated(IRequestCookieCollection Cookies)
         {
             string refreshToken = null;
-            Request.Cookies.TryGetValue("RefreshToken", out refreshToken);
+            Cookies.TryGetValue("RefreshToken", out refreshToken);
             if (refreshToken == null) 
-            { 
+            {
                 return false; 
             }
             try
@@ -48,24 +48,24 @@ namespace course_work_server.Services
             }
 		}
 
-        public string GetClaimValue(string key)
+        public string GetClaimValue(string key, IRequestCookieCollection Cookies)
         {
-            if(!IsAuthenticated())
+            if(!IsAuthenticated(Cookies))
             {
                 throw new UnauthorizedException<AuthService>();
             }
             
-			return GetRefreshToken().Claims.FirstOrDefault(c => c.Type == key).Value;
+			return GetRefreshToken(Cookies).Claims.FirstOrDefault(c => c.Type == key).Value;
         }
 
-		public bool IsAdmin()
-		{
-			if (!IsAuthenticated())
+		public bool IsAdmin(IRequestCookieCollection Cookies)
+        {
+			if (!IsAuthenticated(Cookies))
 			{
 				return false;
 			}
 
-			if (GetRole() == "Admin")
+			if (GetRole(Cookies) == "Admin")
 			{
 				return true;
 			}

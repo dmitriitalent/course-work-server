@@ -26,7 +26,6 @@ public class ProfileController : ControllerBase
 	{
 		this.db = db;
 		this.TokenService = new TokenService(db);
-		this.AuthService = new AuthService(Request, this.TokenService);
 		this.LoggerService = new LoggerService();
         this.ProfileService = new ProfileService(db, this.LoggerService);
 
@@ -51,8 +50,8 @@ public class ProfileController : ControllerBase
     public IActionResult Update(UserProfileDTO profileDTO)
     {
 		// Проверяем верифицирован ли пользователь
-		if(!AuthService.IsAuthenticated())
-		{ 
+		if(!AuthService.IsAuthenticated(Request.Cookies))
+		{
 			throw new UnauthorizedException<ProfileController>(); 
 		}
 
@@ -63,7 +62,7 @@ public class ProfileController : ControllerBase
 			//field.SetValue(в какой объект вставляем, что вставляем)
 			field.SetValue(profile, field.GetValue(profileDTO));
 		}
-		profile.Id = int.Parse(AuthService.GetClaimValue("Id"));
+		profile.Id = int.Parse(AuthService.GetClaimValue("Id", Request.Cookies));
 
 		string error = ProfileService.UpdateInDatabase(profile);
         if (error != null) { throw new InternalServerException<ProfileController>(error); }

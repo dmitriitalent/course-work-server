@@ -5,6 +5,7 @@ using course_work_server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace course_work_server.Controllers;
 
@@ -22,14 +23,14 @@ public class RaceController : ControllerBase
         this.db = db;
         this.RaceService = new RaceService(this.db);
         this.TokenService = new TokenService(this.db);
-        this.AuthService = new AuthService(Request, this.TokenService);
     }
     
     [HttpPost]
     [Route("create")]
     public IActionResult Create(RaceDTO raceDTO)
     {
-        if (!AuthService.IsAdmin())
+
+		if (!AuthService.IsAdmin(Request.Cookies))
         {
             throw new ForbiddenException<RaceController>();
         }
@@ -44,7 +45,7 @@ public class RaceController : ControllerBase
     [Route("update")]
     public IActionResult Update(int id, RaceDTO raceDTO)
     {
-		if (!AuthService.IsAdmin())
+		if (!AuthService.IsAdmin(Request.Cookies))
 		{
 			throw new ForbiddenException<RaceController>();
 		}
@@ -59,7 +60,7 @@ public class RaceController : ControllerBase
     [Route("delete")]
     public IActionResult Delete(int id)
     {
-		if (!AuthService.IsAdmin())
+		if (!AuthService.IsAdmin(Request.Cookies))
 		{
 			throw new ForbiddenException<RaceController>();
 		}
