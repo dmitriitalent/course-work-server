@@ -17,6 +17,21 @@ namespace course_work_server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
 
+            modelBuilder.Entity("RaceUser", b =>
+                {
+                    b.Property<int>("RacesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("RacesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RaceUser");
+                });
+
             modelBuilder.Entity("course_work_server.Entities.Race", b =>
                 {
                     b.Property<int>("Id")
@@ -114,6 +129,21 @@ namespace course_work_server.Migrations
                         .IsUnique();
 
                     b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("RaceUser", b =>
+                {
+                    b.HasOne("course_work_server.Entities.Race", null)
+                        .WithMany()
+                        .HasForeignKey("RacesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("course_work_server.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("course_work_server.Entities.RefreshToken", b =>

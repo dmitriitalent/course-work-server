@@ -19,7 +19,13 @@ namespace course_work_server.Entities
         public RefreshToken RefreshToken { get; set; }
 
         public UserProfile Profile { get; set; }
-    }
+
+		public ICollection<Race> Races { get; set; }
+		public User()
+		{
+			Races = new List<Race>();
+		}
+	}
 
     public class UserProfile
     {
