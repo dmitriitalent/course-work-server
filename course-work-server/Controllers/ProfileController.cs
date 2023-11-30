@@ -34,7 +34,7 @@ public class ProfileController : ControllerBase
 
     }
 
-	[HttpPost]
+	[HttpGet]
 	[Route("get")]
 	public IActionResult Get(int id)
 	{
