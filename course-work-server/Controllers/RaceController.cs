@@ -4,6 +4,7 @@ using course_work_server.Exceptions;
 using course_work_server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
@@ -25,6 +26,28 @@ public class RaceController : ControllerBase
         this.RaceService = new RaceService(this.db);
         this.TokenService = new TokenService(this.db);
         this.AuthService = new AuthService(this.TokenService);
+    }
+
+    [HttpPost]
+    public IActionResult SignIn(SignIn signInDTO)
+    {
+        User user = db.Users.FirstOrDefault(u => u.Id == signInDTO.UserId);
+		Race race = db.Races.FirstOrDefault(r => r.Id == signInDTO.RaceId);
+
+		if (race == null)
+		{
+			return BadRequest("Такой гонки не существует.");
+		}
+		if (user == null)
+		{
+			return BadRequest("Такого пользователя не существует.");
+		}
+
+        user.Races.Add(race);
+        race.Users.Add(user);
+        db.SaveChanges();
+
+		return Ok();
     }
     
     [HttpPost]
